@@ -19,21 +19,21 @@
 
 ```mermaid
 graph TD
-    User[用户/前端] -->|HTTP/REST| API[API Server (Gin)]
-    API -->|Auth| JWT[JWT Middleware]
-    API -->|Async| Queue[Task Queue (Channel)]
+    User["用户/前端"] -->|HTTP/REST| API["API Server (Gin)"]
+    API -->|Auth| JWT["JWT Middleware"]
+    API -->|Async| Queue["Task Queue (Channel)"]
     
-    subgraph Core Services
-        Sync[Sync Service] -->|Fetch| HelmRepo[Helm Repository]
-        Deploy[Deploy Service] -->|Install| K8s[Kubernetes Cluster]
-        Task[Task Worker] -->|Execute| Deploy
+    subgraph CoreServices [Core Services]
+        Sync["Sync Service"] -->|Fetch| HelmRepo["Helm Repository"]
+        Deploy["Deploy Service"] -->|Install| K8s["Kubernetes Cluster"]
+        Task["Task Worker"] -->|Execute| Deploy
     end
     
     API --> Sync
     Queue --> Task
     
-    subgraph Data Persistence
-        DB[(SQLite/MySQL)]
+    subgraph DataPersistence [Data Persistence]
+        DB[("SQLite/MySQL")]
     end
     
     Sync -->|Write| DB
