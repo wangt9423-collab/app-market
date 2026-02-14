@@ -1,0 +1,17 @@
+server:
+  port: "8081"
+  mode: "debug"
+
+log:
+  level: "debug"
+
+database:
+  driver: "sqlite"
+  dsn: "app-market.db"
+
+helm:
+  repo_url: "https://charts.bitnami.com/bitnami"
+
+chart:
+  storage_path: "/var/app-market/charts"  # Chart 本地存储目录
+  max_upload_size: 104857600              # 100MB 限制

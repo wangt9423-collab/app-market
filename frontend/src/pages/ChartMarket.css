@@ -1,0 +1,75 @@
+.market-container {
+  padding: 8px;
+}
+
+.market-title {
+  margin-bottom: 24px;
+  font-weight: 600;
+  color: #1f1f1f;
+}
+
+.chart-card {
+  border-radius: 12px !important;
+  border: none !important;
+  background: #ffffff;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  overflow: hidden;
+}
+
+.chart-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
+}
+
+.chart-icon-wrapper {
+  height: 140px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 56px;
+  background: linear-gradient(135deg, #f6f8fb 0%, #e9ecf3 100%);
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.chart-card:hover .chart-icon-wrapper {
+  background: linear-gradient(135deg, #e6f7ff 0%, #bae7ff 100%);
+}
+
+.chart-icon {
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
+  transition: transform 0.3s ease;
+}
+
+.chart-card:hover .chart-icon {
+  transform: scale(1.1);
+}
+
+.chart-description {
+  min-height: 44px;
+  color: #666;
+  margin-bottom: 16px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.version-tags {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.action-button {
+  border-radius: 6px;
+  font-weight: 500;
+  box-shadow: 0 2px 4px rgba(24, 144, 255, 0.2);
+}
+
+.action-button:hover {
+  box-shadow: 0 4px 8px rgba(24, 144, 255, 0.3);
+}

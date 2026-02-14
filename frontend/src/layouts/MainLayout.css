@@ -1,0 +1,71 @@
+.header {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  padding: 0 24px;
+  z-index: 20;
+  position: relative;
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 64px;
+}
+
+.logo {
+  font-size: 20px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #1890ff 0%, #096dd9 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: 0.5px;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+}
+
+.user-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 12px;
+  border-radius: 6px;
+  transition: all 0.3s;
+}
+
+.user-button:hover {
+  background: rgba(0, 0, 0, 0.025);
+}
+
+.username {
+  color: #1f1f1f;
+  font-weight: 500;
+}
+
+.content {
+  padding: 24px;
+  background: #f5f7fa;
+  min-height: calc(100vh - 64px);
+}
+
+/* Sider styles overrides */
+:global(.ant-layout-sider) {
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.05);
+  z-index: 15;
+}
+
+:global(.ant-menu-item) {
+  margin: 4px 8px !important;
+  width: calc(100% - 16px) !important;
+  border-radius: 6px;
+}
+
+:global(.ant-menu-item-selected) {
+  background: #e6f7ff !important;
+  font-weight: 500;
+  box-shadow: 0 2px 4px rgba(24, 144, 255, 0.1);
+}

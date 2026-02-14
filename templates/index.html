@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kubernetes App Market</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; }
+        .hidden { display: none; }
+        .card { border: 1px solid #ccc; padding: 15px; margin: 10px 0; border-radius: 5px; }
+        button { padding: 8px 15px; cursor: pointer; }
+        input, select, textarea { padding: 8px; margin: 5px 0; width: 300px; display: block; }
+        .error { color: red; }
+        .success { color: green; }
+    </style>
+</head>
+<body>
+
+    <h1>Kubernetes App Market</h1>
+
+    <!-- Login Section -->
+    <div id="login-section">
+        <h2>Login</h2>
+        <input type="text" id="username" placeholder="Username (User ID)">
+        <input type="password" id="password" placeholder="Password (Any)">
+        <button onclick="login()">Login</button>
+        <p id="login-msg" class="error"></p>
+    </div>
+
+    <!-- Dashboard Section -->
+    <div id="dashboard-section" class="hidden">
+        <p>Logged in as <span id="user-display"></span> <button onclick="logout()">Logout</button></p>
+        
+        <div style="display: flex; gap: 20px;">
+            <div style="flex: 1;">
+                <h3>Available Repositories</h3>
+                <div id="repo-list">Loading...</div>
+                <hr>
+                <h4>Add Repo (Admin)</h4>
+                <input type="text" id="repo-name" placeholder="Repo Name">
+                <input type="text" id="repo-url" placeholder="Repo URL">
+                <button onclick="addRepo()">Add Repo</button>
+            </div>
+
+            <div style="flex: 1;">
+                <h3>My Instances</h3>
+                <button onclick="loadInstances()">Refresh</button>
+                <div id="instance-list"></div>
+            </div>
+        </div>
+
+        <hr>
+        <h3>Deployment Form</h3>
+        <div id="deploy-form" class="card">
+            <label>Chart ID: <input type="text" id="deploy-chart-id" placeholder="e.g. bitnami/nginx"></label>
+            <label>Version: <input type="text" id="deploy-version" placeholder="e.g. 1.0.0"></label>
+            <label>Release Name: <input type="text" id="deploy-release" placeholder="my-nginx"></label>
+            <label>Namespace: <input type="text" id="deploy-ns" value="default"></label>
+            <label>Values (JSON): <textarea id="deploy-values" rows="5">{}</textarea></label>
+            <label><input type="checkbox" id="deploy-quick" style="display:inline; width:auto;"> Quick Mode</label>
+            <button onclick="deploy()">Deploy</button>
+            <p id="deploy-msg"></p>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = "http://localhost:8081";
+        let token = localStorage.getItem("token");
+
+        if (token) {
+            showDashboard();
+        }
+
+        async function login() {
+            const uid = document.getElementById("username").value;
+            const pass = document.getElementById("password").value;
+            
+            try {
+                const res = await fetch(`${API_URL}/login`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ user_id: uid, password: pass })
+                });
+                const data = await res.json();
+                
+                if (res.ok) {
+                    token = data.token;
+                    localStorage.setItem("token", token);
+                    localStorage.setItem("user", uid);
+                    showDashboard();
+                } else {
+                    document.getElementById("login-msg").innerText = data.error;
+                }
+            } catch (e) {
+                document.getElementById("login-msg").innerText = "Network Error";
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem("token");
+            location.reload();
+        }
+
+        function showDashboard() {
+            document.getElementById("login-section").classList.add("hidden");
+            document.getElementById("dashboard-section").classList.remove("hidden");
+            document.getElementById("user-display").innerText = localStorage.getItem("user");
+            loadRepos();
+            loadInstances();
+        }
+
+        async function loadRepos() {
+            // Repos endpoint is technically admin only but maybe open?
+            // Wait, my router put it under /admin without auth check (open)
+            const res = await fetch(`${API_URL}/admin/repos`);
+            const repos = await res.json();
+            const list = document.getElementById("repo-list");
+            list.innerHTML = repos.map(r => `
+                <div class="card">
+                    <b>${r.name}</b> (${r.url})
+                    <button onclick="syncRepo('${r.id}')">Sync</button>
+                </div>
+            `).join("");
+        }
+
+        async function addRepo() {
+            const name = document.getElementById("repo-name").value;
+            const url = document.getElementById("repo-url").value;
+            await fetch(`${API_URL}/admin/repos`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ name, url })
+            });
+            loadRepos();
+        }
+
+        async function syncRepo(id) {
+            await fetch(`${API_URL}/admin/repos/${id}/sync`, { method: "POST" });
+            alert("Sync triggered!");
+        }
+
+        async function loadInstances() {
+            const res = await fetch(`${API_URL}/api/instances`, {
+                headers: { "Authorization": `Bearer ${token}` }
+            });
+            if (!res.ok) return;
+            const instances = await res.json();
+            document.getElementById("instance-list").innerHTML = instances.map(i => `
+                <div class="card">
+                    <b>${i.name}</b> (${i.chart_id}:${i.chart_version})<br>
+                    Status: ${i.status}<br>
+                    NS: ${i.namespace}
+                </div>
+            `).join("");
+        }
+
+        async function deploy() {
+            const payload = {
+                chart_id: document.getElementById("deploy-chart-id").value,
+                version: document.getElementById("deploy-version").value,
+                release_name: document.getElementById("deploy-release").value,
+                namespace: document.getElementById("deploy-ns").value,
+                user_values: JSON.parse(document.getElementById("deploy-values").value),
+                is_quick_mode: document.getElementById("deploy-quick").checked
+            };
+
+            const res = await fetch(`${API_URL}/api/deploy`, {
+                method: "POST",
+                headers: { 
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+                body: JSON.stringify(payload)
+            });
+            
+            const data = await res.json();
+            if (res.ok) {
+                document.getElementById("deploy-msg").innerText = `Queued! Task ID: ${data.task_id}`;
+                document.getElementById("deploy-msg").className = "success";
+                pollTask(data.task_id);
+            } else {
+                document.getElementById("deploy-msg").innerText = data.error;
+                document.getElementById("deploy-msg").className = "error";
+            }
+        }
+
+        async function pollTask(id) {
+            const interval = setInterval(async () => {
+                const res = await fetch(`${API_URL}/api/tasks/${id}`, {
+                    headers: { "Authorization": `Bearer ${token}` }
+                });
+                const task = await res.json();
+                
+                if (task.status === "completed" || task.status === "failed") {
+                    clearInterval(interval);
+                    document.getElementById("deploy-msg").innerText = `Task ${task.status}: ${task.result}`;
+                    loadInstances();
+                } else {
+                    document.getElementById("deploy-msg").innerText = `Task ${task.status}...`;
+                }
+            }, 2000);
+        }
+    </script>
+</body>
+</html>

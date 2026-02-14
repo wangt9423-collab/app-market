@@ -1,0 +1,641 @@
+basePath: /
+definitions:
+  handler.AddRepoRequest:
+    properties:
+      name:
+        example: bitnami
+        type: string
+      url:
+        example: https://charts.bitnami.com/bitnami
+        type: string
+    required:
+    - name
+    - url
+    type: object
+  handler.CreateUserRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+      role:
+        enum:
+        - admin
+        - user
+        type: string
+      username:
+        type: string
+    required:
+    - password
+    - role
+    - username
+    type: object
+  handler.DeployRequest:
+    properties:
+      chart_id:
+        example: nginx
+        type: string
+      is_quick_mode:
+        example: true
+        type: boolean
+      namespace:
+        example: default
+        type: string
+      release_name:
+        example: my-nginx
+        type: string
+      user_values:
+        additionalProperties: true
+        type: object
+      version:
+        example: 1.0.0
+        type: string
+    required:
+    - chart_id
+    - namespace
+    - release_name
+    - version
+    type: object
+  handler.LoginRequest:
+    properties:
+      password:
+        example: admin123
+        type: string
+      username:
+        example: admin
+        type: string
+    required:
+    - password
+    - username
+    type: object
+  handler.LoginResponse:
+    properties:
+      token:
+        example: eyJhbGciOiJIUzI1Ni...
+        type: string
+    type: object
+  handler.ResetPasswordRequest:
+    properties:
+      password:
+        type: string
+    required:
+    - password
+    type: object
+  handler.TaskResponse:
+    properties:
+      message:
+        type: string
+      status:
+        type: string
+      task_id:
+        type: integer
+    type: object
+  handler.UpdateUserRequest:
+    properties:
+      email:
+        type: string
+      role:
+        enum:
+        - admin
+        - user
+        type: string
+      status:
+        enum:
+        - active
+        - inactive
+        type: string
+    type: object
+  handler.UserListResponse:
+    properties:
+      limit:
+        type: integer
+      page:
+        type: integer
+      total:
+        type: integer
+      users:
+        items:
+          $ref: '#/definitions/handler.UserResponse'
+        type: array
+    type: object
+  handler.UserResponse:
+    properties:
+      created_at:
+        type: string
+      email:
+        type: string
+      id:
+        type: integer
+      role:
+        type: string
+      status:
+        type: string
+      username:
+        type: string
+    type: object
+  model.AppInstance:
+    properties:
+      applied_values:
+        allOf:
+        - $ref: '#/definitions/model.JSONMap'
+        description: AppliedValues stores the final merged values used for deployment
+      chart_id:
+        type: string
+      chart_version:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      namespace:
+        type: string
+      status:
+        description: deployed, failed, pending
+        type: string
+      updated_at:
+        type: string
+      user_id:
+        type: string
+    type: object
+  model.ChartRepo:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      updated_at:
+        type: string
+      url:
+        type: string
+    type: object
+  model.JSONMap:
+    additionalProperties: true
+    type: object
+  model.Task:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      payload:
+        $ref: '#/definitions/model.JSONMap'
+      result:
+        description: Error message or success details
+        type: string
+      status:
+        description: pending, running, completed, failed
+        type: string
+      type:
+        description: deploy, uninstall
+        type: string
+      updated_at:
+        type: string
+      user_id:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  description: Enterprise Helm Chart Management System
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Kubernetes App Market API
+  version: 0.1.0
+paths:
+  /admin/charts/{id}:
+    delete:
+      description: Delete an unpublished chart
+      parameters:
+      - description: Chart ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Delete Chart
+      tags:
+      - admin
+  /admin/repos:
+    get:
+      description: Get all registered chart repositories
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.ChartRepo'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: List Repositories
+      tags:
+      - repo
+    post:
+      consumes:
+      - application/json
+      description: Register a new Helm chart repository
+      parameters:
+      - description: Repo Details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handler.AddRepoRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Add Chart Repository
+      tags:
+      - repo
+  /admin/repos/{id}/sync:
+    post:
+      description: Trigger index.yaml synchronization for a repo
+      parameters:
+      - description: Repo ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Sync Repository
+      tags:
+      - repo
+  /admin/users:
+    get:
+      consumes:
+      - application/json
+      description: Get all users with pagination
+      parameters:
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Page size
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.UserListResponse'
+      summary: List Users
+      tags:
+      - admin
+    post:
+      consumes:
+      - application/json
+      description: Create a new user
+      parameters:
+      - description: User data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handler.CreateUserRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/handler.UserResponse'
+      summary: Create User
+      tags:
+      - admin
+  /admin/users/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a user
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+      summary: Delete User
+      tags:
+      - admin
+    get:
+      consumes:
+      - application/json
+      description: Get a user by ID
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.UserResponse'
+      summary: Get User
+      tags:
+      - admin
+    put:
+      consumes:
+      - application/json
+      description: Update a user
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: User data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handler.UpdateUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.UserResponse'
+      summary: Update User
+      tags:
+      - admin
+  /admin/users/{id}/reset-password:
+    post:
+      consumes:
+      - application/json
+      description: Reset a user's password
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: New password
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handler.ResetPasswordRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Reset Password
+      tags:
+      - admin
+  /api/deploy:
+    post:
+      consumes:
+      - application/json
+      description: Queues a deployment task for a specific chart
+      parameters:
+      - description: Deployment Parameters
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handler.DeployRequest'
+      produces:
+      - application/json
+      responses:
+        "202":
+          description: Accepted
+          schema:
+            $ref: '#/definitions/handler.TaskResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Deploy Application
+      tags:
+      - deploy
+  /api/instances:
+    get:
+      description: Get all deployed instances for the current user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.AppInstance'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: List Instances
+      tags:
+      - deploy
+  /api/instances/{id}:
+    delete:
+      description: Delete a deployed instance from Kubernetes and database
+      parameters:
+      - description: Instance ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: Forbidden
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Delete Instance
+      tags:
+      - deploy
+  /api/tasks/{id}:
+    get:
+      description: Check the status of an asynchronous task
+      parameters:
+      - description: Task ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Task'
+        "403":
+          description: Forbidden
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get Task Status
+      tags:
+      - deploy
+  /login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticates a user and returns a JWT token
+      parameters:
+      - description: Login Credentials
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handler.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.LoginResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: User Login
+      tags:
+      - auth
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
