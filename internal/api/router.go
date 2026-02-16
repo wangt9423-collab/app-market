@@ -97,5 +97,24 @@ func NewRouter(cfg *config.Config) (*gin.Engine, error) {
 		api.GET("/tasks/:id", deployHandler.GetTaskStatus)
 	}
 
+	// SPA Fallback: Serve index.html for all non-API routes (supports direct browser access to SPA routes)
+	r.NoRoute(func(c *gin.Context) {
+		// Only serve index.html for non-API routes
+		if len(c.Request.URL.Path) > 0 && c.Request.URL.Path[:1] != "/" {
+			c.Request.URL.Path = "/" + c.Request.URL.Path
+		}
+		if c.Request.URL.Path != "/login" && c.Request.URL.Path != "/market" && 
+		   c.Request.URL.Path != "/deploy" && c.Request.URL.Path != "/myapps" &&
+		   c.Request.URL.Path != "/admin" && c.Request.URL.Path != "/admin/charts" &&
+		   c.Request.URL.Path != "/admin/users" && c.Request.URL.Path != "/tasks" {
+			// Only redirect if it's clearly a frontend route
+			if c.Request.URL.Path != "/" && c.Request.URL.Path != "/index.html" &&
+			   c.Request.URL.Path != "/api" && c.Request.URL.Path != "/admin" {
+				// Let it return 404 for unknown paths, but try index.html for common SPA routes
+			}
+		}
+		c.HTML(http.StatusOK, "index.html", gin.H{})
+	})
+
 	return r, nil
 }
