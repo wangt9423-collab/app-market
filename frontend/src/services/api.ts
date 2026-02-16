@@ -17,7 +17,7 @@ import type {
 } from '@/types'
 
 const apiClient = axios.create({
-  baseURL: 'http://localhost:8081',
+  baseURL: '/',  // 使用相对路径，通过 Vite 代理到后端
   timeout: 30000,
   headers: {
     'Content-Type': 'application/json'
@@ -113,7 +113,7 @@ export const chartService = {
     const formData = new FormData()
     formData.append('file', file)
     const token = localStorage.getItem('token')
-    await axios.post('http://localhost:8081/admin/charts/upload', formData, {
+    await apiClient.post('/admin/charts/upload', formData, {
       headers: token ? { Authorization: `Bearer ${token}` } : {}
     })
   },
@@ -122,7 +122,7 @@ export const chartService = {
     const formData = new FormData()
     formData.append('file', file)
     const token = localStorage.getItem('token')
-    const response = await axios.post<ParsedChartInfo>('http://localhost:8081/admin/charts/parse', formData, {
+    const response = await apiClient.post<ParsedChartInfo>('/admin/charts/parse', formData, {
       headers: token ? { Authorization: `Bearer ${token}` } : {}
     })
     return response.data
@@ -133,7 +133,7 @@ export const chartService = {
     formData.append('file', file)
     formData.append('metadata', JSON.stringify(metadata))
     const token = localStorage.getItem('token')
-    await axios.post('http://localhost:8081/admin/charts/onboard', formData, {
+    await apiClient.post('/admin/charts/onboard', formData, {
       headers: token ? { Authorization: `Bearer ${token}` } : {}
     })
   }

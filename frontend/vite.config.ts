@@ -16,10 +16,17 @@ export default defineConfig(({ mode }) => {
       }
     },
     server: {
+      host: '0.0.0.0',
+      port: 5173,
       middlewareMode: false,
       proxy: {
         // API 路由代理
         '/api': {
+          target: env.VITE_API_URL || 'http://localhost:8081',
+          changeOrigin: true
+        },
+        // 登录接口代理
+        '/login': {
           target: env.VITE_API_URL || 'http://localhost:8081',
           changeOrigin: true
         }
