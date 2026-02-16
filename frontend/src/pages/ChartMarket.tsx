@@ -34,7 +34,7 @@ export default function ChartMarket() {
   }
 
   return (
-    <div className="market-container">
+    <div className="market-container page-container">
       <div className="market-header">
         <div className="market-header-content">
           <div className="market-header-icon">

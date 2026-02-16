@@ -3,6 +3,9 @@
   --primary-color: #667eea;
   --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   --primary-light: rgba(102, 126, 234, 0.1);
+  --success-color: #10b981;
+  --warning-color: #f59e0b;
+  --danger-color: #ef4444;
   --text-primary: #1a1a2e;
   --text-secondary: #6b7280;
   --border-color: #f0f0f0;
@@ -249,4 +252,200 @@ body {
   100% {
     background-position: -200% 0;
   }
+}
+
+/* Page transitions */
+.page-container {
+  animation: pageIn 0.4s ease-out;
+}
+
+@keyframes pageIn {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Enhanced table styles */
+.ant-table-wrapper .ant-table {
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.ant-table-wrapper .ant-table-thead > tr > th {
+  background: linear-gradient(180deg, #fafbfc 0%, #f3f4f6 100%) !important;
+  font-weight: 600 !important;
+  color: #374151 !important;
+  border-bottom: 2px solid #e5e7eb !important;
+}
+
+.ant-table-wrapper .ant-table-tbody > tr:hover > td {
+  background: linear-gradient(90deg, rgba(102, 126, 234, 0.04) 0%, rgba(118, 75, 162, 0.04) 100%) !important;
+}
+
+.ant-table-wrapper .ant-table-tbody > tr > td {
+  border-bottom: 1px solid #f3f4f6 !important;
+  padding: 16px 20px !important;
+}
+
+/* Status tags */
+.status-tag {
+  border-radius: 20px !important;
+  padding: 2px 12px !important;
+  font-weight: 500 !important;
+  font-size: 12px !important;
+}
+
+.status-success {
+  background: rgba(16, 185, 129, 0.1) !important;
+  color: #059669 !important;
+  border: none !important;
+}
+
+.status-pending {
+  background: rgba(245, 158, 11, 0.1) !important;
+  color: #d97706 !important;
+  border: none !important;
+}
+
+.status-failed {
+  background: rgba(239, 68, 68, 0.1) !important;
+  color: #dc2626 !important;
+  border: none !important;
+}
+
+.status-running {
+  background: rgba(102, 126, 234, 0.1) !important;
+  color: #4f46e5 !important;
+  border: none !important;
+}
+
+/* Enhanced buttons */
+.ant-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+}
+
+.ant-btn .anticon {
+  font-size: 16px !important;
+}
+
+/* Form enhancements */
+.ant-form-item-label > label {
+  font-weight: 500 !important;
+  color: #374151 !important;
+}
+
+.ant-form-item-explain-error {
+  font-size: 13px !important;
+}
+
+/* Card enhancements */
+.ant-card-head {
+  border-bottom: 1px solid #f3f4f6 !important;
+  padding: 16px 24px !important;
+}
+
+.ant-card-head-title {
+  font-weight: 600 !important;
+  color: #1a1a2e !important;
+}
+
+.ant-card-body {
+  padding: 24px !important;
+}
+
+/* Empty state improvements */
+.ant-empty-description {
+  color: #9ca3af !important;
+  font-size: 14px !important;
+}
+
+/* Badge enhancements */
+.ant-badge-status-dot {
+  width: 8px !important;
+  height: 8px !important;
+}
+
+/* Tabs enhancements */
+.ant-tabs-tab {
+  padding: 12px 20px !important;
+  font-weight: 500 !important;
+}
+
+.ant-tabs-tab-active .ant-tabs-tab-btn {
+  color: var(--primary-color) !important;
+}
+
+.ant-tabs-ink-bar {
+  background: var(--primary-gradient) !important;
+  height: 3px !important;
+  border-radius: 3px !important;
+}
+
+/* Steps enhancements */
+.ant-steps-item-process .ant-steps-item-icon {
+  background: var(--primary-gradient) !important;
+  border-color: #667eea !important;
+}
+
+.ant-steps-item-finish .ant-steps-item-icon {
+  border-color: var(--success-color) !important;
+}
+
+.ant-steps-item-finish .ant-steps-item-icon .ant-steps-icon {
+  color: var(--success-color) !important;
+}
+
+/* Progress bar */
+.ant-progress-bg {
+  background: var(--primary-gradient) !important;
+}
+
+/* Notification enhancements */
+.ant-notification-notice {
+  border-radius: var(--radius-lg) !important;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12) !important;
+}
+
+/* Drawer enhancements */
+.ant-drawer-header {
+  border-bottom: 1px solid #f3f4f6 !important;
+  padding: 20px 24px !important;
+}
+
+.ant-drawer-title {
+  font-weight: 600 !important;
+  color: #1a1a2e !important;
+}
+
+/* Responsive utilities */
+@media (max-width: 768px) {
+  .ant-card-body {
+    padding: 16px !important;
+  }
+  
+  .ant-table-thead > tr > th,
+  .ant-table-tbody > tr > td {
+    padding: 12px 8px !important;
+  }
+}
+
+/* Smooth scroll behavior */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Focus improvements */
+.ant-btn:focus-visible,
+.ant-input:focus-visible,
+.ant-select:focus-visible {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
 }
