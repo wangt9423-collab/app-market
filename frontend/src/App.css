@@ -1,1 +1,84 @@
-/* Reset default App styles */
+/* App Container Styles */
+#root {
+  min-height: 100vh;
+}
+
+/* Login page container */
+.login-page {
+  min-height: 100vh;
+}
+
+/* Prevent layout shift */
+.ant-layout {
+  background: #f5f7fa;
+}
+
+/* Custom scrollbar for sidebar */
+.ant-layout-sider {
+  scrollbar-width: thin;
+  scrollbar-color: #e0e0e0 transparent;
+}
+
+/* Monaco editor container */
+.monaco-editor-container {
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #f0f0f0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .market-header {
+    flex-direction: column;
+    text-align: center;
+    gap: 20px;
+  }
+  
+  .market-header-content {
+    flex-direction: column;
+  }
+  
+  .main-sider {
+    position: fixed !important;
+    z-index: 1000;
+  }
+  
+  .main-content-layout {
+    margin-left: 0 !important;
+  }
+}
+
+/* Print styles */
+@media print {
+  .main-header,
+  .main-sider {
+    display: none !important;
+  }
+  
+  .main-content-layout {
+    margin-left: 0 !important;
+  }
+}
+
+/* Dark mode support (optional) */
+@media (prefers-color-scheme: dark) {
+  /* Add dark mode overrides if needed */
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .ant-btn-primary {
+    border: 2px solid #fff !important;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

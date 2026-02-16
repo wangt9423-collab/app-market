@@ -1,71 +1,233 @@
-.header {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  padding: 0 24px;
-  z-index: 20;
-  position: relative;
+/* Main Layout Modern Styles */
+.main-layout {
+  min-height: 100vh;
 }
 
-.header-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.main-sider {
+  background: #ffffff !important;
+  border-right: 1px solid #f0f0f0;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.02);
+  position: fixed !important;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  z-index: 100;
+}
+
+.sider-logo {
   height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  border-bottom: 1px solid #f0f0f0;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 
-.logo {
-  font-size: 20px;
+.sider-logo .logo-icon {
+  font-size: 28px;
+}
+
+.sider-logo .logo-text {
+  font-size: 18px;
   font-weight: 700;
-  background: linear-gradient(135deg, #1890ff 0%, #096dd9 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  letter-spacing: 0.5px;
+  color: #ffffff;
+  letter-spacing: -0.5px;
 }
 
-.user-info {
+.main-menu {
+  border-inline-end: none !important;
+  padding: 16px 12px;
+  background: transparent !important;
+}
+
+.main-menu .ant-menu-item {
+  height: 48px !important;
+  line-height: 48px !important;
+  margin: 4px 0 !important;
+  padding: 0 16px !important;
+  border-radius: 12px !important;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.main-menu .ant-menu-item:hover {
+  background: rgba(102, 126, 234, 0.08) !important;
+}
+
+.main-menu .ant-menu-item-selected {
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.12) 0%, rgba(118, 75, 162, 0.12) 100%) !important;
+}
+
+.main-menu .ant-menu-item-selected::after {
+  display: none;
+}
+
+.menu-icon {
+  font-size: 18px;
+  margin-right: 12px;
+}
+
+.main-content-layout {
+  margin-left: 240px;
+  background: #f5f7fa;
+  min-height: 100vh;
+}
+
+.main-header {
+  background: #ffffff !important;
+  padding: 0 24px !important;
+  height: 64px !important;
+  line-height: 64px !important;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #f0f0f0;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.02);
+  position: sticky;
+  top: 0;
+  z-index: 99;
+}
+
+.header-left {
   display: flex;
   align-items: center;
 }
 
-.user-button {
+.page-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #1a1a2e;
+  margin: 0;
+  letter-spacing: -0.3px;
+}
+
+.header-right {
   display: flex;
   align-items: center;
   gap: 8px;
+}
+
+.header-icon-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  transition: all 0.3s ease;
+}
+
+.header-icon-btn:hover {
+  background: rgba(102, 126, 234, 0.08);
+}
+
+.user-dropdown-btn {
+  height: 44px;
   padding: 4px 12px;
-  border-radius: 6px;
-  transition: all 0.3s;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
 }
 
-.user-button:hover {
-  background: rgba(0, 0, 0, 0.025);
+.user-dropdown-btn:hover {
+  background: rgba(102, 126, 234, 0.08);
 }
 
-.username {
-  color: #1f1f1f;
+.user-dropdown-btn .username {
   font-weight: 500;
+  color: #1a1a2e;
 }
 
-.content {
+.user-dropdown-btn .dropdown-arrow {
+  font-size: 10px;
+  color: #9ca3af;
+  margin-left: 4px;
+}
+
+.user-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 0;
+}
+
+.user-menu-item.logout {
+  color: #ef4444;
+}
+
+.main-content {
   padding: 24px;
   background: #f5f7fa;
-  min-height: calc(100vh - 64px);
 }
 
-/* Sider styles overrides */
-:global(.ant-layout-sider) {
-  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.05);
-  z-index: 15;
+.content-wrapper {
+  max-width: 1600px;
+  margin: 0 auto;
 }
 
-:global(.ant-menu-item) {
-  margin: 4px 8px !important;
-  width: calc(100% - 16px) !important;
-  border-radius: 6px;
+/* Ant Design overrides for modern look */
+.ant-card {
+  border-radius: 16px;
+  border: 1px solid #f0f0f0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  transition: all 0.3s ease;
 }
 
-:global(.ant-menu-item-selected) {
-  background: #e6f7ff !important;
+.ant-card:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
+}
+
+.ant-btn {
+  border-radius: 10px;
   font-weight: 500;
-  box-shadow: 0 2px 4px rgba(24, 144, 255, 0.1);
+  transition: all 0.3s ease;
+}
+
+.ant-btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.ant-btn-primary:hover {
+  background: linear-gradient(135deg, #5a6fd6 0%, #6a4190 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+.ant-tag {
+  border-radius: 6px;
+  font-weight: 500;
+}
+
+.ant-table {
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.ant-table-thead > tr > th {
+  background: #fafbfc !important;
+  font-weight: 600;
+  color: #374151;
+}
+
+.ant-input,
+.ant-select-selector {
+  border-radius: 10px !important;
+}
+
+.ant-dropdown-menu {
+  border-radius: 12px;
+  padding: 8px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12);
+}
+
+.ant-dropdown-menu-item {
+  border-radius: 8px;
+  padding: 8px 12px;
 }
