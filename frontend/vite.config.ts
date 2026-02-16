@@ -25,12 +25,27 @@ export default defineConfig(({ mode }) => {
           target: env.VITE_API_URL || 'http://localhost:8081',
           changeOrigin: true
         },
-        // 管理后台API代理
+        // 登录API代理 (仅POST请求)
+        '/login': {
+          target: env.VITE_API_URL || 'http://localhost:8081',
+          changeOrigin: true,
+          bypass(req) {
+            if (req.method === 'GET') {
+              return '/login'
+            }
+          }
+        },
+        // 管理后台API代理 (排除页面路由)
         '/admin': {
           target: env.VITE_API_URL || 'http://localhost:8081',
-          changeOrigin: true
+          changeOrigin: true,
+          bypass(req) {
+            // 根路径 /admin 返回前端页面
+            if (req.method === 'GET' && (req.url === '' || req.url === '/')) {
+              return '/admin'
+            }
+          }
         }
-        // 注意: /login 路由不要代理，让 Vite SPA fallback 处理
       },
       historyApiFallback: true
     }
