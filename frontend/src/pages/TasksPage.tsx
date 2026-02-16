@@ -60,7 +60,7 @@ export default function TasksPage() {
   ]
 
   return (
-    <div>
+    <div className="page-container">
       <Card title="部署任务">
         <Table
           dataSource={tasks}

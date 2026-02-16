@@ -169,7 +169,7 @@ export default function DeployPage() {
   }
 
   return (
-    <div style={{ maxWidth: 1000, margin: '0 auto', padding: '24px' }}>
+    <div className="page-container" style={{ maxWidth: 1000, margin: '0 auto', padding: '24px' }}>
       <div style={{ marginBottom: 24, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
           <Title level={2} style={{ marginBottom: 8 }}>部署 {chartName}</Title>

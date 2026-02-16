@@ -92,7 +92,7 @@ export default function MyApps() {
   ]
 
   return (
-    <div>
+    <div className="page-container">
       <Card title="我的应用">
         <Table
           dataSource={instances}
