@@ -74,6 +74,7 @@ func NewRouter(cfg *config.Config) (*gin.Engine, error) {
 		admin.POST("/charts", chartHandler.CreateChart)
 		admin.POST("/charts/:id/versions", chartHandler.CreateChartVersion)
 		admin.PUT("/charts/:id/publish", chartHandler.UpdatePublishStatus)
+		admin.PUT("/charts/:id", chartHandler.UpdateChart)
 		admin.DELETE("/charts/:id", chartHandler.DeleteChart)
 
 		admin.GET("/repos", repoHandler.ListRepos)

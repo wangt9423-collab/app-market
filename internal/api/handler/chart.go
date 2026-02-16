@@ -135,6 +135,50 @@ func (h *ChartHandler) UpdatePublishStatus(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"status": "updated"})
 }
 
+type UpdateChartRequest struct {
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	Icon        string `json:"icon"`
+	Home        string `json:"home"`
+}
+
+// UpdateChart updates chart basic information
+// PUT /admin/charts/:id
+func (h *ChartHandler) UpdateChart(c *gin.Context) {
+	chartID, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid chart id"})
+		return
+	}
+
+	var req UpdateChartRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	updates := map[string]interface{}{}
+	if req.Name != "" {
+		updates["name"] = req.Name
+	}
+	if req.Description != "" {
+		updates["description"] = req.Description
+	}
+	if req.Icon != "" {
+		updates["icon"] = req.Icon
+	}
+	if req.Home != "" {
+		updates["home"] = req.Home
+	}
+
+	if err := h.service.UpdateChart(uint(chartID), updates); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update chart"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"status": "updated"})
+}
+
 func (h *ChartHandler) CreateChart(c *gin.Context) {
 	var req CreateChartRequest
 	if err := c.ShouldBindJSON(&req); err != nil {

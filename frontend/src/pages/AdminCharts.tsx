@@ -1,18 +1,22 @@
 import { useEffect, useState } from 'react'
-import { Table, Switch, Tag, Button, Space, Typography, message, Modal } from 'antd'
+import { Table, Switch, Tag, Button, Space, Typography, message, Modal, Form, Input } from 'antd'
 import type { ColumnsType } from 'antd/es/table'
-import { ReloadOutlined, PlusOutlined, DeleteOutlined, ExclamationCircleOutlined } from '@ant-design/icons'
+import { ReloadOutlined, PlusOutlined, DeleteOutlined, EditOutlined, ExclamationCircleOutlined } from '@ant-design/icons'
 import { chartService, repoService } from '@/services/api'
 import type { Chart, Repo } from '@/types'
 import ChartOnboardingWizard from '@/components/ChartOnboardingWizard'
 
 const { Title } = Typography
+const { TextArea } = Input
 
 export default function AdminCharts() {
   const [charts, setCharts] = useState<Chart[]>([])
   const [loading, setLoading] = useState(false)
   const [repos, setRepos] = useState<Repo[]>([])
   const [wizardOpen, setWizardOpen] = useState(false)
+  const [editModalOpen, setEditModalOpen] = useState(false)
+  const [editingChart, setEditingChart] = useState<Chart | null>(null)
+  const [editForm] = Form.useForm()
 
   const fetchCharts = async () => {
     setLoading(true)
@@ -47,6 +51,33 @@ export default function AdminCharts() {
       message.success(published ? '应用已上架' : '应用已下架')
     } catch {
       message.error('更新状态失败')
+    }
+  }
+
+  // 编辑应用信息
+  const handleEdit = (chart: Chart) => {
+    setEditingChart(chart)
+    editForm.setFieldsValue({
+      name: chart.name,
+      description: chart.description,
+      icon: chart.icon,
+      home: chart.home
+    })
+    setEditModalOpen(true)
+  }
+
+  const handleEditSubmit = async () => {
+    if (!editingChart) return
+    try {
+      const values = await editForm.validateFields()
+      await chartService.updateChart(editingChart.id, values)
+      setCharts(prev => prev.map(item => 
+        item.id === editingChart.id ? { ...item, ...values } : item
+      ))
+      message.success('更新成功')
+      setEditModalOpen(false)
+    } catch {
+      message.error('更新失败')
     }
   }
 
@@ -119,15 +150,24 @@ export default function AdminCharts() {
       title: '操作',
       key: 'action',
       render: (_, record) => (
-        <Button
-          type="link"
-          danger
-          icon={<DeleteOutlined />}
-          disabled={record.published}
-          onClick={() => handleDelete(record)}
-        >
-          删除
-        </Button>
+        <Space>
+          <Button
+            type="link"
+            icon={<EditOutlined />}
+            onClick={() => handleEdit(record)}
+          >
+            编辑
+          </Button>
+          <Button
+            type="link"
+            danger
+            icon={<DeleteOutlined />}
+            disabled={record.published}
+            onClick={() => handleDelete(record)}
+          >
+            删除
+          </Button>
+        </Space>
       )
     }
   ]
@@ -161,6 +201,30 @@ export default function AdminCharts() {
           repos={repos}
         />
       )}
+
+      <Modal
+        title="编辑应用信息"
+        open={editModalOpen}
+        onOk={handleEditSubmit}
+        onCancel={() => setEditModalOpen(false)}
+        okText="保存"
+        width={600}
+      >
+        <Form form={editForm} layout="vertical">
+          <Form.Item name="name" label="应用名称" rules={[{ required: true, message: '请输入应用名称' }]}>
+            <Input placeholder="请输入应用名称" />
+          </Form.Item>
+          <Form.Item name="description" label="描述">
+            <TextArea rows={3} placeholder="请输入应用描述" />
+          </Form.Item>
+          <Form.Item name="icon" label="图标URL">
+            <Input placeholder="https://example.com/icon.png" />
+          </Form.Item>
+          <Form.Item name="home" label="首页URL">
+            <Input placeholder="https://example.com" />
+          </Form.Item>
+        </Form>
+      </Modal>
     </div>
   )
 }

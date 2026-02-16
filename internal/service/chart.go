@@ -191,3 +191,8 @@ func (s *ChartService) DeleteChart(chartID uint) error {
 
 	return nil
 }
+
+// UpdateChart updates chart basic information
+func (s *ChartService) UpdateChart(chartID uint, updates map[string]interface{}) error {
+	return s.db.Model(&model.Chart{}).Where("id = ?", chartID).Updates(updates).Error
+}

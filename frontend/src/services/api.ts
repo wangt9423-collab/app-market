@@ -88,6 +88,16 @@ export const chartService = {
     await apiClient.put(`/admin/charts/${chartId}/publish`, { published })
   },
 
+  // 更新图表基本信息
+  updateChart: async (chartId: number, data: {
+    name?: string
+    description?: string
+    icon?: string
+    home?: string
+  }): Promise<void> => {
+    await apiClient.put(`/admin/charts/${chartId}`, data)
+  },
+
   deleteChart: async (chartId: number): Promise<void> => {
     await apiClient.delete(`/admin/charts/${chartId}`)
   },
