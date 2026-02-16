@@ -25,19 +25,12 @@ export default defineConfig(({ mode }) => {
           target: env.VITE_API_URL || 'http://localhost:8081',
           changeOrigin: true
         },
-        // 登录接口代理
-        '/login': {
-          target: env.VITE_API_URL || 'http://localhost:8081',
-          changeOrigin: true
-        },
         // 管理后台API代理
         '/admin': {
           target: env.VITE_API_URL || 'http://localhost:8081',
           changeOrigin: true
         }
-        // 注意: /admin 开头的路径不再全部代理
-        // 前端有 /admin/charts 路由页面
-        // 后端 API 调用通过 apiClient 直接指定完整 URL (http://localhost:8081/admin/...)
+        // 注意: /login 路由不要代理，让 Vite SPA fallback 处理
       },
       historyApiFallback: true
     }
