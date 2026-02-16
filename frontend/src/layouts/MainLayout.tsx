@@ -86,6 +86,7 @@ export default function MainLayout() {
           selectedKeys={[location.pathname]}
           items={menuItems}
           className="main-menu"
+          onClick={({ key }) => navigate(key)}
         />
       </Sider>
       <Layout className="main-content-layout">
