@@ -15,10 +15,33 @@ export default defineConfig(({ mode }) => {
         '@': path.resolve(__dirname, './src')
       }
     },
+    // 优化构建
+    build: {
+      rollupOptions: {
+        output: {
+          // 代码分割
+          manualChunks: {
+            'react-vendor': ['react', 'react-dom', 'react-router-dom'],
+            'antd-vendor': ['antd'],
+            'monaco-vendor': ['monaco-editor']
+          }
+        }
+      },
+      // 压缩配置
+      minify: 'terser',
+      chunkSizeWarningLimit: 2000
+    },
+    // 开发服务器优化
     server: {
       host: '0.0.0.0',
       port: 5173,
       middlewareMode: false,
+      // 开启 HMR 快速更新
+      hmr: {
+        overlay: true
+      },
+      // 预连接
+      preflightRequests: true,
       proxy: {
         // API 路由代理
         '/api': {
@@ -40,7 +63,6 @@ export default defineConfig(({ mode }) => {
           target: env.VITE_API_URL || 'http://localhost:8081',
           changeOrigin: true,
           bypass(req) {
-            // 根路径 /admin 返回前端页面
             if (req.method === 'GET' && (req.url === '' || req.url === '/')) {
               return '/admin'
             }

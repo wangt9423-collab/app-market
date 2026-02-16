@@ -1,16 +1,27 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { lazy, Suspense } from 'react'
 import { loader } from '@monaco-editor/react'
+import { Spin } from 'antd'
 import * as monaco from 'monaco-editor'
 import { useAuthStore } from '@/stores/authStore'
-import LoginPage from '@/pages/LoginPage'
-import MainLayout from '@/layouts/MainLayout'
-import ChartMarket from '@/pages/ChartMarket'
-import DeployPage from '@/pages/DeployPage'
-import AdminCharts from '@/pages/AdminCharts'
-import AdminUsers from '@/pages/AdminUsers'
-import MyApps from '@/pages/MyApps'
-import TasksPage from '@/pages/TasksPage'
+
+// 路由级别代码分割 - 懒加载页面组件
+const LoginPage = lazy(() => import('@/pages/LoginPage'))
+const MainLayout = lazy(() => import('@/layouts/MainLayout'))
+const ChartMarket = lazy(() => import('@/pages/ChartMarket'))
+const DeployPage = lazy(() => import('@/pages/DeployPage'))
+const AdminCharts = lazy(() => import('@/pages/AdminCharts'))
+const AdminUsers = lazy(() => import('@/pages/AdminUsers'))
+const MyApps = lazy(() => import('@/pages/MyApps'))
+const TasksPage = lazy(() => import('@/pages/TasksPage'))
+
+// 加载中组件
+const PageLoader = () => (
+  <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+    <Spin size="large" />
+  </div>
+)
 
 // Configure Monaco Editor to use local instance (no CDN)
 loader.config({ monaco })
@@ -37,28 +48,30 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/login" element={<LoginPage />} />
-          <Route
-            path="/"
-            element={
-              <ProtectedRoute>
-                <MainLayout />
-              </ProtectedRoute>
-            }
-          >
-            <Route index element={<ChartMarket />} />
-            <Route path="deploy/:chartName" element={<DeployPage />} />
-            <Route path="admin/charts" element={<AdminCharts />} />
-            <Route path="admin/users" element={<AdminUsers />} />
-            <Route path="my-apps" element={<MyApps />} />
-            <Route path="tasks" element={<TasksPage />} />
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Route>
-          <Route path="*" element={<Navigate to="/login" replace />} />
-        </Routes>
-      </BrowserRouter>
+      <Suspense fallback={<PageLoader />}>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/login" element={<LoginPage />} />
+            <Route
+              path="/"
+              element={
+                <ProtectedRoute>
+                  <MainLayout />
+                </ProtectedRoute>
+              }
+            >
+              <Route index element={<ChartMarket />} />
+              <Route path="deploy/:chartName" element={<DeployPage />} />
+              <Route path="admin/charts" element={<AdminCharts />} />
+              <Route path="admin/users" element={<AdminUsers />} />
+              <Route path="my-apps" element={<MyApps />} />
+              <Route path="tasks" element={<TasksPage />} />
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Route>
+            <Route path="*" element={<Navigate to="/login" replace />} />
+          </Routes>
+        </BrowserRouter>
+      </Suspense>
     </QueryClientProvider>
   )
 }
