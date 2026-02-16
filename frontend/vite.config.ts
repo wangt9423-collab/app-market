@@ -29,6 +29,11 @@ export default defineConfig(({ mode }) => {
         '/login': {
           target: env.VITE_API_URL || 'http://localhost:8081',
           changeOrigin: true
+        },
+        // 管理后台API代理
+        '/admin': {
+          target: env.VITE_API_URL || 'http://localhost:8081',
+          changeOrigin: true
         }
         // 注意: /admin 开头的路径不再全部代理
         // 前端有 /admin/charts 路由页面
